@@ -1,0 +1,36 @@
+version: '3.8'  # The version of the Docker Compose syntax we are using.
+
+services:
+  # --- SERVICE 1: THE DATABASE ---
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: uni_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: university_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # --- SERVICE 2: THE MESSAGE BROKER ---
+  rabbitmq:
+    image: rabbitmq:3-management 
+    container_name: uni_rabbitmq
+    ports:
+      - "5672:5672"   
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest 
+      RABBITMQ_DEFAULT_PASS: guest
+
+  # --- SERVICE 3: THE CACHE ---
+  redis:
+    image: redis:alpine 
+    container_name: uni_redis
+    ports:
+      - "6379:6379" # Standard Redis port.
+
+volumes:
+  pgdata:
