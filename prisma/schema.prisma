@@ -1,0 +1,76 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chatMessages      ChatMessage[]
+  escalatedQueries  EscalatedQuery[]
+
+  @@map("users")
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  response  String?
+  isBot     Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+  @@index([userId])
+}
+
+model EscalatedQuery {
+  id          String   @id @default(uuid())
+  userId      String
+  query       String
+  status      String   @default("PENDING") // PENDING, IN_PROGRESS, RESOLVED
+  resolution  String?
+  createdAt   DateTime @default(now())
+  resolvedAt  DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("escalated_queries")
+  @@index([userId])
+  @@index([status])
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  title       String
+  type        String   // PDF or TEXT
+  content     String   @db.Text
+  filename    String?
+  chunkCount  Int      @default(0)
+  uploadedAt  DateTime @default(now())
+
+  @@map("documents")
+}

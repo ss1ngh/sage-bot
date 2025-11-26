@@ -1,0 +1,14 @@
+{
+    "name": "sage-prisma",
+    "version": "1.0.0",
+    "description": "Prisma database schema for Sage chatbot",
+    "scripts": {
+        "migrate": "prisma migrate deploy",
+        "generate": "prisma generate",
+        "studio": "prisma studio"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.7.0",
+        "prisma": "^5.7.0"
+    }
+}

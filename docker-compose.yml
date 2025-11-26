@@ -1,36 +1,239 @@
-version: '3.8'  # The version of the Docker Compose syntax we are using.
+version: '3.8'
 
 services:
-  # --- SERVICE 1: THE DATABASE ---
+  # PostgreSQL Database
   postgres:
-    image: pgvector/pgvector:pg16
-    container_name: uni_postgres
+    image: postgres:15-alpine
+    container_name: sage-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sage_db
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: university_db
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sage-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # --- SERVICE 2: THE MESSAGE BROKER ---
-  rabbitmq:
-    image: rabbitmq:3-management 
-    container_name: uni_rabbitmq
-    ports:
-      - "5672:5672"   
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: guest 
-      RABBITMQ_DEFAULT_PASS: guest
-
-  # --- SERVICE 3: THE CACHE ---
+  # Redis Cache
   redis:
-    image: redis:alpine 
-    container_name: uni_redis
+    image: redis:7-alpine
+    container_name: sage-redis
     ports:
-      - "6379:6379" # Standard Redis port.
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - sage-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: sage-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - sage-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ChromaDB Vector Database
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: sage-chromadb
+    ports:
+      - "8001:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+    networks:
+      - sage-network
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+
+  # Prisma Migration Service
+  prisma-migrate:
+    build:
+      context: ./prisma
+      dockerfile: Dockerfile
+    container_name: sage-prisma-migrate
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sage_db?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sage-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    container_name: sage-auth-service
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sage_db?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SERVICE_PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      prisma-migrate:
+        condition: service_completed_successfully
+    networks:
+      - sage-network
+    restart: unless-stopped
+
+  # Chat Service
+  chat-service:
+    build:
+      context: .
+      dockerfile: services/chat-service/Dockerfile
+    container_name: sage-chat-service
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sage_db?schema=public
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      CHROMADB_URL: http://chromadb:8000
+      CHAT_SERVICE_PORT: 3002
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+      prisma-migrate:
+        condition: service_completed_successfully
+    networks:
+      - sage-network
+    restart: unless-stopped
+
+  # Admin Service
+  admin-service:
+    build:
+      context: .
+      dockerfile: services/admin-service/Dockerfile
+    container_name: sage-admin-service
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sage_db?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_SERVICE_PORT: 3003
+    ports:
+      - "3003:3003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      prisma-migrate:
+        condition: service_completed_successfully
+    networks:
+      - sage-network
+    restart: unless-stopped
+
+  # Ingestion Service
+  ingestion-service:
+    build:
+      context: .
+      dockerfile: services/ingestion-service/Dockerfile
+    container_name: sage-ingestion-service
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sage_db?schema=public
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      CHROMADB_URL: http://chromadb:8000
+      INGESTION_SERVICE_PORT: 3004
+    ports:
+      - "3004:3004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+      prisma-migrate:
+        condition: service_completed_successfully
+    networks:
+      - sage-network
+    restart: unless-stopped
+
+  # Notification Service
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    container_name: sage-notification-service
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_SECURE: ${EMAIL_SECURE}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      EMAIL_FROM: ${EMAIL_FROM}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - sage-network
+    restart: unless-stopped
+
+  # React Frontend
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: sage-client
+    environment:
+      REACT_APP_AUTH_SERVICE_URL: http://localhost:3001
+      REACT_APP_CHAT_SERVICE_URL: http://localhost:3002
+      REACT_APP_ADMIN_SERVICE_URL: http://localhost:3003
+      REACT_APP_INGESTION_SERVICE_URL: http://localhost:3004
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - chat-service
+      - admin-service
+      - ingestion-service
+    networks:
+      - sage-network
+    restart: unless-stopped
+
+networks:
+  sage-network:
+    driver: bridge
 
 volumes:
-  pgdata:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+  chromadb_data:
