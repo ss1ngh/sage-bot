@@ -1,6 +1,6 @@
 # Sage University Chatbot
 
-A comprehensive microservices-based university chatbot system with RAG (Retrieval Augmented Generation) using Gemini AI, featuring separate student and admin panels.
+A comprehensive microservices-based university chatbot system with RAG (Retrieval Augmented Generation) using Gemini AI and local embeddings, featuring separate student and admin panels.
 
 ## 🌟 Features
 
@@ -21,9 +21,9 @@ A comprehensive microservices-based university chatbot system with RAG (Retrieva
 
 ### Microservices
 1. **Auth Service** (Port 3001): JWT-based authentication for students and admins
-2. **Chat Service** (Port 3002): RAG-powered chat with Gemini AI and ChromaDB
+2. **Chat Service** (Port 3002): RAG-powered chat using **Gemini 1.5 Flash** for generation and **Local Embeddings** (`all-MiniLM-L6-v2`) for retrieval.
 3. **Admin Service** (Port 3003): Admin operations and escalation management
-4. **Ingestion Service** (Port 3004): PDF parsing and vector embedding generation
+4. **Ingestion Service** (Port 3004): PDF parsing and local vector embedding generation (`all-MiniLM-L6-v2`).
 5. **Notification Service**: Email notifications via RabbitMQ
 
 ### Infrastructure
@@ -36,7 +36,7 @@ A comprehensive microservices-based university chatbot system with RAG (Retrieva
 ## 📋 Prerequisites
 
 - Docker and Docker Compose installed
-- Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
+- Gemini API key ([Get one here](https://makersuite.google.com/app/apikey)) - *Required for text generation only.*
 - SMTP credentials for email notifications (optional)
 
 ## 🚀 Quick Start
@@ -76,7 +76,7 @@ docker-compose up --build
 ```
 
 This will:
-- Build all services
+- Build all services (using `node:22-slim` for compatibility)
 - Set up the database
 - Run migrations
 - Start all containers
@@ -103,7 +103,7 @@ This will:
    - Login as admin
    - Go to "Upload Knowledge Base" tab
    - Upload PDF documents or paste text
-   - Documents are automatically processed and embedded
+   - Documents are automatically processed and embedded locally
 
 3. **Create Student Account**
    - Go back to home and click "Student Login"
@@ -131,16 +131,11 @@ This will:
 ```
 sage/
 ├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/    # Reusable components
-│   │   ├── pages/         # Page components
-│   │   └── utils/         # API utilities
-│   └── Dockerfile
 ├── services/
 │   ├── auth-service/      # Authentication
-│   ├── chat-service/      # RAG chat engine
+│   ├── chat-service/      # RAG chat engine (Local Embeddings + Gemini)
 │   ├── admin-service/     # Admin operations
-│   ├── ingestion-service/ # Document processing
+│   ├── ingestion-service/ # Document processing (Local Embeddings)
 │   └── notification-service/ # Email notifications
 ├── prisma/                # Database schema
 ├── shared/                # Shared utilities
@@ -207,17 +202,23 @@ curl http://localhost:3004/health  # Ingestion
 
 ### Common Issues
 
+**Dimension Mismatch Error (768 vs 384)**
+If you see `InvalidArgumentError: Collection expecting embedding with dimension of 768, got 384`, it means the database has old embeddings from the previous model.
+**Fix:**
+```bash
+# Delete volumes to reset the database
+docker-compose down -v
+docker-compose up -d
+# Then RE-UPLOAD your documents
+```
+
+**Build or Runtime Errors (ld-linux-x86-64.so.2)**
+If you see errors related to `sharp` or `onnxruntime` missing shared libraries, ensure you are using the updated Dockerfiles which use `node:22-slim` (Debian) instead of Alpine, as these libraries require `glibc`.
+
 **ChromaDB Connection Error**
 ```bash
 # Restart ChromaDB container
 docker-compose restart chromadb
-```
-
-**Database Connection Issues**
-```bash
-# Recreate database
-docker-compose down -v
-docker-compose up --build
 ```
 
 **Email Not Sending**
@@ -307,9 +308,10 @@ DBSIZE
 ## 📝 Tech Stack
 
 **Backend:**
-- Node.js + Express.js
+- Node.js (v22) + Express.js
 - Prisma ORM + PostgreSQL
-- Gemini AI API
+- **Gemini 1.5 Flash** (Generation)
+- **Local Embeddings** (`@xenova/transformers`, `all-MiniLM-L6-v2`)
 - ChromaDB (Vector Database)
 - Redis (Caching)
 - RabbitMQ (Message Queue)
@@ -332,6 +334,7 @@ MIT License - feel free to use this project for educational purposes.
 ## 🙏 Acknowledgments
 
 - Google Gemini AI for powering the chat responses
+- Hugging Face & Xenova for local transformers
 - ChromaDB for vector storage
 - The open-source community
 
