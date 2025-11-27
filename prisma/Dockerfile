@@ -1,9 +1,9 @@
-FROM node:18-slim
+FROM node:22-alpine
 
 WORKDIR /app
 
 # Install OpenSSL
-RUN apt-get update -y && apt-get install -y openssl
+RUN apk add --no-cache openssl
 
 COPY package*.json ./
 COPY schema.prisma ./

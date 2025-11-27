@@ -1,8 +1,9 @@
-FROM node:22-alpine
+FROM node:22-slim
 
 WORKDIR /app
 
-RUN apk add --no-cache openssl
+# Install OpenSSL and build tools (for sharp/onnxruntime)
+RUN apt-get update -y && apt-get install -y openssl python3 make g++
 
 # Copy package files
 COPY services/ingestion-service/package*.json ./services/ingestion-service/

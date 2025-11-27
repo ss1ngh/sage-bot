@@ -1,7 +1,20 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { queryDocuments } = require('./vectorStore');
+const { pipeline } = require('@xenova/transformers');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// Singleton for the embedding pipeline
+let embedder = null;
+
+async function getEmbedder() {
+    if (!embedder) {
+        console.log("Loading local embedding model...");
+        embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+        console.log("Local embedding model loaded.");
+    }
+    return embedder;
+}
 
 /**
  * Retry a function with exponential backoff
@@ -28,11 +41,9 @@ async function retryWithBackoff(fn, retries = 3, delay = 1000) {
  * @returns {Promise<number[]>} Embedding vector
  */
 async function generateQueryEmbedding(query) {
-    return retryWithBackoff(async () => {
-        const model = genAI.getGenerativeModel({ model: 'embedding-001' });
-        const result = await model.embedContent(query);
-        return result.embedding.values;
-    });
+    const pipe = await getEmbedder();
+    const output = await pipe(query, { pooling: 'mean', normalize: true });
+    return Array.from(output.data);
 }
 
 /**

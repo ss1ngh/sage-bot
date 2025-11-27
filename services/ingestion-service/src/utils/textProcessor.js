@@ -1,6 +1,19 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { pipeline } = require('@xenova/transformers');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// Singleton for the embedding pipeline
+let embedder = null;
+
+async function getEmbedder() {
+    if (!embedder) {
+        console.log("Loading local embedding model...");
+        embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+        console.log("Local embedding model loaded.");
+    }
+    return embedder;
+}
 
 /**
  * Split text into chunks with overlap
@@ -44,25 +57,22 @@ async function retryWithBackoff(fn, retries = 3, delay = 1000) {
 }
 
 /**
- * Generate embeddings for text chunks using Gemini
+ * Generate embeddings for text chunks using local transformer
  * @param {string[]} chunks - Text chunks to embed
  * @returns {Promise<number[][]>} Array of embedding vectors
  */
 async function generateEmbeddings(chunks) {
-    const model = genAI.getGenerativeModel({ model: 'embedding-001' });
-
+    const pipe = await getEmbedder();
     const embeddings = [];
 
     for (const chunk of chunks) {
         try {
-            const result = await retryWithBackoff(async () => {
-                return await model.embedContent(chunk);
-            });
-            embeddings.push(result.embedding.values);
+            const output = await pipe(chunk, { pooling: 'mean', normalize: true });
+            embeddings.push(Array.from(output.data));
         } catch (error) {
             console.error('Error generating embedding:', error);
-            // Push zero vector as fallback
-            embeddings.push(new Array(768).fill(0));
+            // Push zero vector as fallback (384 dimensions for all-MiniLM-L6-v2)
+            embeddings.push(new Array(384).fill(0));
         }
     }
 
