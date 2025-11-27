@@ -136,30 +136,25 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-light">
+        <div className="min-h-screen flex flex-col">
             {/* Header */}
-            <div className="bg-white shadow-sm border-b border-gray-200">
+            <div className="sticky top-0 w-full bg-white/50 backdrop-blur-sm z-10 border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary-700 to-primary-900 rounded-xl flex items-center justify-center">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
+                        <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">A</span>
                         </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-gray-800">Admin Dashboard</h1>
-                            <p className="text-sm text-gray-500">University Chatbot Management</p>
-                        </div>
+                        <span className="font-semibold text-gray-900">Admin Dashboard</span>
                     </div>
                     <div className="flex items-center space-x-4">
                         <span className="text-sm text-gray-600">
-                            <span className="font-medium">{userData?.name}</span>
+                            {userData?.name}
                         </span>
                         <button
                             onClick={handleLogout}
-                            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition text-sm font-medium"
+                            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition text-xs font-medium"
                         >
-                            Logout
+                            Log Out
                         </button>
                     </div>
                 </div>
@@ -167,27 +162,28 @@ const AdminDashboard = () => {
 
             {/* Stats Cards */}
             {stats.totalUsers !== undefined && (
-                <div className="max-w-7xl mx-auto px-6 py-6">
+                <div className="max-w-7xl mx-auto px-6 py-8">
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-                            <div className="text-gray-500 text-sm font-medium">Total Users</div>
-                            <div className="text-2xl font-bold text-gray-800 mt-1">{stats.totalUsers}</div>
+                        <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                            <div className="text-gray-400 text-xs font-medium uppercase tracking-wider">Total Users</div>
+                            <div className="text-2xl font-bold text-gray-900 mt-1">{stats.totalUsers}</div>
                         </div>
-                        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-                            <div className="text-gray-500 text-sm font-medium">Documents</div>
-                            <div className="text-2xl font-bold text-gray-800 mt-1">{stats.totalDocuments}</div>
+                        <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                            <div className="text-gray-400 text-xs font-medium uppercase tracking-wider">Documents</div>
+                            <div className="text-2xl font-bold text-gray-900 mt-1">{stats.totalDocuments}</div>
                         </div>
-                        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-                            <div className="text-gray-500 text-sm font-medium">Total Messages</div>
-                            <div className="text-2xl font-bold text-gray-800 mt-1">{stats.totalMessages}</div>
+                        <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                            <div className="text-gray-400 text-xs font-medium uppercase tracking-wider">Messages</div>
+                            <div className="text-2xl font-bold text-gray-900 mt-1">{stats.totalMessages}</div>
                         </div>
-                        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
-                            <div className="text-gray-500 text-sm font-medium">Escalations</div>
-                            <div className="text-2xl font-bold text-gray-800 mt-1">{stats.totalEscalations}</div>
+                        <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                            <div className="text-gray-400 text-xs font-medium uppercase tracking-wider">Escalations</div>
+                            <div className="text-2xl font-bold text-gray-900 mt-1">{stats.totalEscalations}</div>
                         </div>
-                        <div className="bg-amber-50 rounded-xl shadow-sm p-4 border border-amber-200">
-                            <div className="text-amber-700 text-sm font-medium">Pending</div>
-                            <div className="text-2xl font-bold text-amber-900 mt-1">{stats.pendingEscalations}</div>
+                        <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 relative overflow-hidden">
+                            <div className="absolute right-0 top-0 w-16 h-16 bg-amber-50 rounded-bl-full -mr-8 -mt-8"></div>
+                            <div className="text-amber-600 text-xs font-medium uppercase tracking-wider relative z-10">Pending</div>
+                            <div className="text-2xl font-bold text-gray-900 mt-1 relative z-10">{stats.pendingEscalations}</div>
                         </div>
                     </div>
                 </div>
@@ -195,81 +191,100 @@ const AdminDashboard = () => {
 
             {/* Tabs */}
             <div className="max-w-7xl mx-auto px-6">
-                <div className="flex space-x-2 border-b border-gray-200">
+                <div className="flex space-x-6 border-b border-gray-100">
                     <button
                         onClick={() => setActiveTab('escalations')}
-                        className={`px-6 py-3 font-medium transition relative ${activeTab === 'escalations'
-                                ? 'text-primary-700 border-b-2 border-primary-700'
-                                : 'text-gray-500 hover:text-gray-700'
+                        className={`pb-3 font-medium text-sm transition relative ${activeTab === 'escalations'
+                            ? 'text-black border-b-2 border-black'
+                            : 'text-gray-400 hover:text-gray-600'
                             }`}
                     >
                         Escalated Issues
                         {stats.pendingEscalations > 0 && (
-                            <span className="ml-2 px-2 py-0.5 bg-amber-500 text-white text-xs rounded-full">
+                            <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-800 text-[10px] rounded-full">
                                 {stats.pendingEscalations}
                             </span>
                         )}
                     </button>
                     <button
                         onClick={() => setActiveTab('upload')}
-                        className={`px-6 py-3 font-medium transition ${activeTab === 'upload'
-                                ? 'text-primary-700 border-b-2 border-primary-700'
-                                : 'text-gray-500 hover:text-gray-700'
+                        className={`pb-3 font-medium text-sm transition ${activeTab === 'upload'
+                            ? 'text-black border-b-2 border-black'
+                            : 'text-gray-400 hover:text-gray-600'
                             }`}
                     >
-                        Upload Knowledge Base
+                        Knowledge Base
                     </button>
                 </div>
             </div>
 
             {/* Tab Content */}
-            <div className="max-w-7xl mx-auto px-6 py-6">
+            <div className="max-w-7xl mx-auto px-6 py-8">
                 {activeTab === 'escalations' && (
-                    <div className="bg-white rounded-2xl shadow-lg p-6">
-                        <h2 className="text-lg font-bold text-gray-800 mb-4">Escalated Queries</h2>
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h2 className="text-lg font-bold text-gray-900 mb-6">Escalated Queries</h2>
 
                         {loading ? (
-                            <div className="text-center py-8 text-gray-500">Loading...</div>
+                            <div className="text-center py-12 text-gray-400">Loading...</div>
                         ) : escalations.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">No escalated queries</div>
+                            <div className="text-center py-12 text-gray-400">No escalated queries found</div>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {escalations.map((esc) => (
                                     <div
                                         key={esc.id}
-                                        className="border border-gray-200 rounded-xl p-4 hover:border-primary-300 hover:shadow-sm transition"
+                                        className="bg-white rounded-2xl p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.08)] border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300 flex flex-col h-full group"
                                     >
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex-1">
-                                                <div className="flex items-center space-x-2 mb-2">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${esc.status === 'PENDING' ? 'bg-amber-100 text-amber-800' :
-                                                            esc.status === 'RESOLVED' ? 'bg-green-100 text-green-800' :
-                                                                'bg-blue-100 text-blue-800'
-                                                        }`}>
-                                                        {esc.status}
-                                                    </span>
-                                                    <span className="text-sm text-gray-500">
-                                                        {new Date(esc.createdAt).toLocaleDateString()}
-                                                    </span>
-                                                </div>
-                                                <p className="text-gray-800 font-medium mb-1">{esc.query}</p>
-                                                <p className="text-sm text-gray-500">
-                                                    Student: {esc.user?.name} ({esc.user?.email})
-                                                </p>
-                                                {esc.resolution && (
-                                                    <div className="mt-2 p-3 bg-green-50 rounded-lg">
-                                                        <p className="text-sm text-green-800">
-                                                            <strong>Resolution:</strong> {esc.resolution}
-                                                        </p>
-                                                    </div>
-                                                )}
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex items-center space-x-2">
+                                                <div className={`w-2 h-2 rounded-full ${esc.status === 'PENDING' ? 'bg-amber-500' :
+                                                    esc.status === 'RESOLVED' ? 'bg-green-500' :
+                                                        'bg-blue-500'
+                                                    }`}></div>
+                                                <span className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
+                                                    {esc.status}
+                                                </span>
                                             </div>
-                                            {esc.status === 'PENDING' && (
+                                            <span className="text-xs text-gray-400 font-mono">
+                                                {new Date(esc.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex-1 mb-6">
+                                            <h3 className="text-gray-900 font-semibold text-lg leading-snug mb-1 line-clamp-3">
+                                                "{esc.query}"
+                                            </h3>
+                                        </div>
+
+                                        <div className="mt-auto pt-4 border-t border-gray-50">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
+                                                        {esc.user?.name?.charAt(0) || 'U'}
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-bold text-gray-900">
+                                                            {esc.user?.name}
+                                                        </span>
+                                                        <span className="text-[10px] text-gray-500">
+                                                            {esc.user?.email}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {esc.resolution ? (
+                                                <div className="p-3 bg-green-50 rounded-xl border border-green-100">
+                                                    <p className="text-xs text-green-800">
+                                                        <span className="font-semibold">Resolved:</span> {esc.resolution}
+                                                    </p>
+                                                </div>
+                                            ) : (
                                                 <button
                                                     onClick={() => setSelectedEscalation(esc)}
-                                                    className="ml-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium"
+                                                    className="w-full py-2.5 bg-black text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition shadow-lg shadow-gray-200 group-hover:scale-[1.02] active:scale-95"
                                                 >
-                                                    Resolve
+                                                    Resolve Query
                                                 </button>
                                             )}
                                         </div>
@@ -280,33 +295,33 @@ const AdminDashboard = () => {
 
                         {/* Resolution Modal */}
                         {selectedEscalation && (
-                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6">
-                                    <h3 className="text-xl font-bold text-gray-800 mb-4">Resolve Escalation</h3>
-                                    <div className="mb-4 p-4 bg-gray-50 rounded-xl">
-                                        <p className="text-sm text-gray-600 mb-1">Query:</p>
-                                        <p className="text-gray-800 font-medium">{selectedEscalation.query}</p>
+                            <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8">
+                                    <h3 className="text-xl font-bold text-gray-900 mb-6">Resolve Escalation</h3>
+                                    <div className="mb-6 p-5 bg-gray-50 rounded-xl border border-gray-100">
+                                        <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide font-semibold">Query</p>
+                                        <p className="text-gray-900 font-medium text-lg">{selectedEscalation.query}</p>
                                     </div>
                                     <textarea
                                         value={resolution}
                                         onChange={(e) => setResolution(e.target.value)}
                                         placeholder="Enter your resolution..."
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none h-32 resize-none"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none h-32 resize-none text-gray-800"
                                     />
-                                    <div className="flex justify-end space-x-3 mt-4">
+                                    <div className="flex justify-end space-x-3 mt-6">
                                         <button
                                             onClick={() => {
                                                 setSelectedEscalation(null);
                                                 setResolution('');
                                             }}
-                                            className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium"
+                                            className="px-5 py-2.5 text-gray-600 hover:text-gray-900 transition font-medium text-sm"
                                         >
                                             Cancel
                                         </button>
                                         <button
                                             onClick={handleResolveEscalation}
                                             disabled={!resolution.trim()}
-                                            className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-6 py-2.5 bg-black text-white rounded-xl hover:bg-gray-800 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-gray-200"
                                         >
                                             Submit Resolution
                                         </button>
@@ -318,53 +333,53 @@ const AdminDashboard = () => {
                 )}
 
                 {activeTab === 'upload' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Upload Form */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h2 className="text-lg font-bold text-gray-800 mb-4">Upload Document</h2>
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <h2 className="text-lg font-bold text-gray-900 mb-6">Add to Knowledge Base</h2>
 
-                            <div className="flex space-x-2 mb-6">
+                            <div className="flex space-x-2 mb-6 p-1 bg-gray-100 rounded-xl">
                                 <button
                                     onClick={() => setUploadType('pdf')}
-                                    className={`flex-1 px-4 py-2 rounded-lg font-medium transition ${uploadType === 'pdf'
-                                            ? 'bg-primary-600 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition ${uploadType === 'pdf'
+                                        ? 'bg-white text-black shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     PDF Upload
                                 </button>
                                 <button
                                     onClick={() => setUploadType('text')}
-                                    className={`flex-1 px-4 py-2 rounded-lg font-medium transition ${uploadType === 'text'
-                                            ? 'bg-primary-600 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition ${uploadType === 'text'
+                                        ? 'bg-white text-black shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     Text Input
                                 </button>
                             </div>
 
-                            <form onSubmit={handleFileUpload} className="space-y-4">
+                            <form onSubmit={handleFileUpload} className="space-y-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Document Title *
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Document Title
                                     </label>
                                     <input
                                         type="text"
                                         value={uploadTitle}
                                         onChange={(e) => setUploadTitle(e.target.value)}
                                         placeholder="e.g., Library Hours and Policies"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
                                         required
                                     />
                                 </div>
 
                                 {uploadType === 'pdf' ? (
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            PDF File *
+                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                            PDF File
                                         </label>
-                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-400 transition">
+                                        <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-gray-400 transition bg-gray-50/50">
                                             <input
                                                 type="file"
                                                 accept=".pdf"
@@ -373,27 +388,29 @@ const AdminDashboard = () => {
                                                 id="pdf-upload"
                                                 required
                                             />
-                                            <label htmlFor="pdf-upload" className="cursor-pointer">
-                                                <svg className="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                                </svg>
-                                                <p className="text-sm text-gray-600">
-                                                    {uploadFile ? uploadFile.name : 'Click to upload PDF or drag and drop'}
+                                            <label htmlFor="pdf-upload" className="cursor-pointer block">
+                                                <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-3">
+                                                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                    </svg>
+                                                </div>
+                                                <p className="text-sm font-medium text-gray-700">
+                                                    {uploadFile ? uploadFile.name : 'Click to upload PDF'}
                                                 </p>
-                                                <p className="text-xs text-gray-400 mt-1">PDF up to 10MB</p>
+                                                <p className="text-xs text-gray-400 mt-1">Up to 10MB</p>
                                             </label>
                                         </div>
                                     </div>
                                 ) : (
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Text Content *
+                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                            Text Content
                                         </label>
                                         <textarea
                                             value={uploadText}
                                             onChange={(e) => setUploadText(e.target.value)}
                                             placeholder="Paste your document content here..."
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none h-64 resize-none font-mono text-sm"
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none h-64 resize-none font-mono text-sm"
                                             required
                                         />
                                     </div>
@@ -401,8 +418,8 @@ const AdminDashboard = () => {
 
                                 {uploadMessage && (
                                     <div className={`p-3 rounded-xl text-sm ${uploadMessage.startsWith('✓')
-                                            ? 'bg-green-50 text-green-700 border border-green-200'
-                                            : 'bg-red-50 text-red-700 border border-red-200'
+                                        ? 'bg-green-50 text-green-700 border border-green-100'
+                                        : 'bg-red-50 text-red-700 border border-red-100'
                                         }`}>
                                         {uploadMessage}
                                     </div>
@@ -411,7 +428,7 @@ const AdminDashboard = () => {
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-800 text-white font-medium rounded-xl hover:from-primary-700 hover:to-primary-900 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-200"
+                                    className="w-full px-6 py-3.5 bg-black text-white font-medium rounded-xl hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-gray-200"
                                 >
                                     {uploading ? 'Processing...' : 'Upload & Process'}
                                 </button>
@@ -419,36 +436,36 @@ const AdminDashboard = () => {
                         </div>
 
                         {/* Uploaded Documents List */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h2 className="text-lg font-bold text-gray-800 mb-4">Uploaded Documents</h2>
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <h2 className="text-lg font-bold text-gray-900 mb-6">Uploaded Documents</h2>
 
                             {loading ? (
-                                <div className="text-center py-8 text-gray-500">Loading...</div>
+                                <div className="text-center py-12 text-gray-400">Loading...</div>
                             ) : documents.length === 0 ? (
-                                <div className="text-center py-8 text-gray-500">No documents uploaded yet</div>
+                                <div className="text-center py-12 text-gray-400">No documents uploaded yet</div>
                             ) : (
-                                <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
                                     {documents.map((doc) => (
                                         <div
                                             key={doc.id}
-                                            className="border border-gray-200 rounded-xl p-4 hover:border-primary-300 hover:shadow-sm transition"
+                                            className="group border border-gray-100 rounded-xl p-4 hover:border-gray-300 transition bg-gray-50/50 hover:bg-white"
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
-                                                    <div className="flex items-center space-x-2 mb-1">
-                                                        <span className={`px-2 py-1 rounded text-xs font-medium ${doc.type === 'PDF' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
+                                                    <div className="flex items-center space-x-2 mb-2">
+                                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase ${doc.type === 'PDF' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'
                                                             }`}>
                                                             {doc.type}
                                                         </span>
-                                                        <span className="text-xs text-gray-500">
+                                                        <span className="text-xs text-gray-400">
                                                             {doc.chunkCount} chunks
                                                         </span>
                                                     </div>
-                                                    <h3 className="font-medium text-gray-800">{doc.title}</h3>
+                                                    <h3 className="font-medium text-gray-900">{doc.title}</h3>
                                                     {doc.filename && (
-                                                        <p className="text-xs text-gray-500 mt-1">{doc.filename}</p>
+                                                        <p className="text-xs text-gray-500 mt-1 font-mono">{doc.filename}</p>
                                                     )}
-                                                    <p className="text-xs text-gray-400 mt-1">
+                                                    <p className="text-xs text-gray-400 mt-2">
                                                         {new Date(doc.uploadedAt).toLocaleString()}
                                                     </p>
                                                 </div>

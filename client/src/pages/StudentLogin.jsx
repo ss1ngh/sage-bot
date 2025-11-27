@@ -46,29 +46,27 @@ const StudentLogin = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-light flex items-center justify-center p-4">
+        <div className="min-h-screen flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 {/* Logo/Header */}
-                <div className="text-center mb-8">
-                    <div className="inline-block bg-gradient-to-br from-primary-500 to-primary-700 text-white rounded-2xl p-4 mb-4">
-                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-black text-white rounded-xl mb-4 shadow-lg shadow-gray-200">
+                        <span className="font-bold text-xl">S</span>
                     </div>
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                        Sage University Bot
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                        {isSignup ? 'Create Account' : 'Welcome Back'}
                     </h1>
-                    <p className="text-gray-600">
-                        {isSignup ? 'Create your student account' : 'Welcome back, Student'}
+                    <p className="text-gray-500">
+                        {isSignup ? 'Join Sage University' : 'Sign in to continue to Sage'}
                     </p>
                 </div>
 
                 {/* Login/Signup Form */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {isSignup && (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                     Full Name
                                 </label>
                                 <input
@@ -77,14 +75,14 @@ const StudentLogin = () => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     required={isSignup}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition"
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition bg-gray-50 focus:bg-white"
                                     placeholder="John Doe"
                                 />
                             </div>
                         )}
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                 Email Address
                             </label>
                             <input
@@ -93,13 +91,13 @@ const StudentLogin = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition"
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition bg-gray-50 focus:bg-white"
                                 placeholder="student@university.edu"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                 Password
                             </label>
                             <input
@@ -108,13 +106,13 @@ const StudentLogin = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition"
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition bg-gray-50 focus:bg-white"
                                 placeholder="••••••••"
                             />
                         </div>
 
                         {error && (
-                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                            <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm">
                                 {error}
                             </div>
                         )}
@@ -122,7 +120,7 @@ const StudentLogin = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-primary-500 to-primary-700 text-white font-medium py-3 rounded-xl hover:from-primary-600 hover:to-primary-800 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-200"
+                            className="w-full bg-black text-white font-medium py-3.5 rounded-xl hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-gray-200"
                         >
                             {loading ? 'Processing...' : (isSignup ? 'Create Account' : 'Sign In')}
                         </button>
@@ -134,22 +132,16 @@ const StudentLogin = () => {
                                 setIsSignup(!isSignup);
                                 setError('');
                             }}
-                            className="text-primary-600 hover:text-primary-700 font-medium text-sm"
+                            className="text-gray-600 hover:text-black font-medium text-sm transition"
                         >
                             {isSignup ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
                         </button>
                     </div>
-
-                    <div className="mt-4 text-center">
-                        <Link to="/" className="text-gray-500 hover:text-gray-700 text-sm">
-                            ← Back to Home
-                        </Link>
-                    </div>
                 </div>
 
-                <div className="mt-6 text-center">
-                    <Link to="/admin/login" className="text-primary-600 hover:text-primary-700 font-medium text-sm">
-                        Admin Login →
+                <div className="mt-8 text-center space-y-4">
+                    <Link to="/admin/login" className="block text-sm text-gray-400 hover:text-gray-600 transition">
+                        Admin Access
                     </Link>
                 </div>
             </div>
