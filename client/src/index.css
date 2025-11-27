@@ -17,6 +17,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: radial-gradient(circle at 50% 0%, #fffbeb 0%, #fff1f2 40%, #f8fafc 80%);
+  background-attachment: fixed;
   min-height: 100vh;
 }
 
